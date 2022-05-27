@@ -51,7 +51,7 @@ async function run() {
                 $set: user,
             }
             const result = await usersCollection.updateOne(filter, doc, option);
-            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '6h' });
             res.send({ result, token });
         })
 
@@ -62,11 +62,18 @@ async function run() {
             const user = await cursor.toArray();
             res.send(user);
         });
+        // Get single user profile data 
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const cursor = await usersCollection.findOne({ email: email });
+            res.send(cursor);
+        });
 
+        // admin verification for admin action
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
-            const requesterAccount = await usersCollection.findOne({ email: requester });
-            if (requesterAccount.role === 'admin') {
+            const requesterAcc = await usersCollection.findOne({ email: requester });
+            if (requesterAcc.role === 'admin') {
                 next();
             }
             else {
