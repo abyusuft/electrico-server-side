@@ -106,6 +106,12 @@ async function run() {
             const insert = await productsCollection.insertOne(product);
             res.send(insert);
         })
+        // Get all product for Manage Product page 
+        app.get('/product', async (req, res) => {
+            const product = {}
+            const insert = await productsCollection.insertOne(product).toArray();
+            res.send(insert);
+        })
 
 
         //Review database collection and API
