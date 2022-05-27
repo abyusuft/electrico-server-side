@@ -125,14 +125,35 @@ async function run() {
             const result = await productsCollection.findOne(query);
             res.send(result);
         })
+        // update qty after purchase 
+        app.put('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const stock = req.body;
+            console.log(stock);
+            const newStock = stock.newStockQty;
+            console.log(newStock);
+            const option = { upsert: true };
 
+            const doc = {
+                $set: { stock: newStock },
+            }
+            const result = await productsCollection.updateOne(filter, doc, option);
+            res.send(result);
+        })
+        //Purchase database collection and API
+        const purchaseCollection = client.db("electrico").collection("purchase");
+        app.post('/purchase', async (req, res) => {
+            const product = req.body;
+            const insert = await purchaseCollection.insertOne(product);
+            res.send(insert);
+        })
 
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
 
 
-        //Purchase database collection and API
-        const purchaseCollection = client.db("electrico").collection("purchase");
+
 
 
     }
