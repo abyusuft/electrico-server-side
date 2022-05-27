@@ -148,6 +148,11 @@ async function run() {
             const insert = await purchaseCollection.insertOne(product);
             res.send(insert);
         })
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await purchaseCollection.find(query).toArray();
+            res.send(orders);
+        })
 
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
