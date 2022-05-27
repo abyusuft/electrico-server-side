@@ -130,11 +130,8 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const stock = req.body;
-            console.log(stock);
             const newStock = stock.newStockQty;
-            console.log(newStock);
             const option = { upsert: true };
-
             const doc = {
                 $set: { stock: newStock },
             }
@@ -148,10 +145,34 @@ async function run() {
             const insert = await purchaseCollection.insertOne(product);
             res.send(insert);
         })
+        // get all orders 
         app.get('/orders', async (req, res) => {
             const query = {};
             const orders = await purchaseCollection.find(query).toArray();
             res.send(orders);
+        })
+        // delete order 
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const result = await purchaseCollection.deleteOne(query);
+            res.send(result);
+        })
+        // get My Orders 
+        app.get('/order/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { purchaseBy: email };
+            const myOrders = await purchaseCollection.find(query).toArray();
+            res.send(myOrders);
+        })
+
+        // get single order detail
+        app.get('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await purchaseCollection.findOne(query);
+            res.send(result);
         })
 
         //Review database collection and API
