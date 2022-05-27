@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 var jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -109,8 +109,15 @@ async function run() {
         // Get all product for Manage Product page 
         app.get('/product', async (req, res) => {
             const product = {}
-            const insert = await productsCollection.insertOne(product).toArray();
+            const insert = await productsCollection.find(product).toArray();
             res.send(insert);
+        })
+
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
         })
 
 
