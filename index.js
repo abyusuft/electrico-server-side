@@ -101,6 +101,11 @@ async function run() {
 
         //Product database collection and API
         const productsCollection = client.db("electrico").collection("products");
+        app.post('/product', async (req, res) => {
+            const product = req.body;
+            const insert = await productsCollection.insertOne(product);
+            res.send(insert);
+        })
 
 
         //Review database collection and API
