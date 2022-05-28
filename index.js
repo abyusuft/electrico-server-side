@@ -45,7 +45,7 @@ async function run() {
         const usersCollection = client.db("electrico").collection("users");
 
         // Generate Token on UserLogin and send user to database
-        app.put('/user/:email', verifyJWT, async (req, res) => {
+        app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
