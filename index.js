@@ -186,6 +186,15 @@ async function run() {
             const result = await purchaseCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         })
+        app.put('/paid/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const doc = {
+                $set: { paid: 'Paid' },
+            }
+            const result = await purchaseCollection.updateOne(query, doc);
+            res.send(result);
+        })
 
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
