@@ -169,6 +169,15 @@ async function run() {
             const myOrders = await purchaseCollection.find(query).toArray();
             res.send(myOrders);
         })
+        app.put('/shipment/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const doc = {
+                $set: { ship: 'shipped' },
+            }
+            const result = await purchaseCollection.updateOne(query, doc);
+            res.send(result);
+        })
 
         // get single order detail
         app.get('/payment/:id', async (req, res) => {
