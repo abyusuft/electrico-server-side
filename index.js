@@ -1,18 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-const app = express();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-require('dotenv').config();
 var jwt = require('jsonwebtoken');
+require('dotenv').config();
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
 // app.use(cors());
-app.use(cors({
-    origin: true,
-    optionsSuccessStatus: 200,
-    credentials: true,
-}));
+app.use(cors());
 app.use(express.json());
 
 
@@ -24,11 +21,12 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 function verifyJWT(req, res, next) {
-    const authorization = req.headers.authorization;
-    if (!authorization) {
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    if (!authHeader) {
         return res.status(401).send({ message: 'Unauthorized access' });
     }
-    const token = authorization.split(' ')[1];
+    const token = authHeader.split(' ')[1];
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
@@ -47,7 +45,7 @@ async function run() {
         const usersCollection = client.db("electrico").collection("users");
 
         // Generate Token on UserLogin and send user to database
-        app.put('/user/:email', async (req, res) => {
+        app.put('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -61,14 +59,14 @@ async function run() {
         })
 
         // get user from database
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyJWT, async (req, res) => {
             const query = {};
             const cursor = usersCollection.find(query);
             const user = await cursor.toArray();
             res.send(user);
         });
         // Get single user profile data 
-        app.get('/user/:email', async (req, res) => {
+        app.get('/user/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const cursor = await usersCollection.findOne({ email: email });
             res.send(cursor);
