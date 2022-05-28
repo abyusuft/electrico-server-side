@@ -168,20 +168,26 @@ async function run() {
         })
 
         // get single order detail
-        app.get('/order/:id', async (req, res) => {
+        app.get('/payment/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await purchaseCollection.findOne(query);
+            const result = await purchaseCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         })
 
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
-
+        // Post Review API 
         app.post('/review', async (req, res) => {
-            const product = req.body;
-            const insert = await purchaseCollection.insertOne(product);
+            const review = req.body;
+            const insert = await reviewCollection.insertOne(review);
             res.send(insert);
+        })
+        // Get Review API 
+        app.get('/review', async (req, res) => {
+            const review = {};
+            const result = await reviewCollection.find(review).toArray();
+            res.send(result);
         })
 
 
