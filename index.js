@@ -116,7 +116,7 @@ async function run() {
             res.send(insert);
         })
 
-        app.delete('/product/:id', async (req, res) => {
+        app.delete('/product/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await productsCollection.deleteOne(query);
@@ -143,7 +143,7 @@ async function run() {
         })
         //Purchase database collection and API
         const purchaseCollection = client.db("electrico").collection("purchase");
-        app.post('/purchase', async (req, res) => {
+        app.post('/purchase', verifyJWT, async (req, res) => {
             const product = req.body;
             const insert = await purchaseCollection.insertOne(product);
             res.send(insert);
@@ -181,7 +181,7 @@ async function run() {
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
         // Post Review API 
-        app.post('/review', async (req, res) => {
+        app.post('/review', verifyJWT, async (req, res) => {
             const review = req.body;
             const insert = await reviewCollection.insertOne(review);
             res.send(insert);
