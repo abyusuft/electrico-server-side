@@ -59,7 +59,7 @@ async function run() {
         })
 
         // get user from database
-        app.get('/users', verifyJWT, async (req, res) => {
+        app.get('/users', async (req, res) => {
             const query = {};
             const cursor = usersCollection.find(query);
             const user = await cursor.toArray();
