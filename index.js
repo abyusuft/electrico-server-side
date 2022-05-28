@@ -178,7 +178,11 @@ async function run() {
         //Review database collection and API
         const reviewCollection = client.db("electrico").collection("review");
 
-
+        app.post('/review', async (req, res) => {
+            const product = req.body;
+            const insert = await purchaseCollection.insertOne(product);
+            res.send(insert);
+        })
 
 
 
